@@ -4,4 +4,6 @@
     <string name="tv_show_banner">Tv Show</string>
     <string name="no_data_found">No Data Found</string>
     <string name="picture">picture_content</string>
+
+    <string name="toast_text">Data Can\'t be Loaded</string>
 </resources>

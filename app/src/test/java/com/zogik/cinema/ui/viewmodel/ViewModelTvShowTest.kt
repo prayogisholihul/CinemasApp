@@ -6,7 +6,7 @@ import com.zogik.cinema.coroutines.CoroutinesTest
 import com.zogik.cinema.data.Repository
 import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.network.ApiNetwork
-import com.zogik.cinema.utils.Resource
+import com.zogik.cinema.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +30,7 @@ class ViewModelTvShowTest {
     private val repository = Repository(ApiNetwork.getClient())
 
     @Mock
-    private lateinit var apiMoviesObserver: Observer<Resource<TvShowData?>>
+    private lateinit var apiMoviesObserver: Observer<State<TvShowData?>>
 
     @Test
     fun successTest() {
@@ -43,7 +43,7 @@ class ViewModelTvShowTest {
             val viewModel = ViewModelTvShow(repository)
             viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
-            verify(apiMoviesObserver).onChanged(Resource.Success(TvShowData(any())))
+            verify(apiMoviesObserver).onChanged(State.Success(TvShowData(any())))
             viewModel.tvShowData.removeObserver(apiMoviesObserver)
         }
     }
@@ -59,7 +59,7 @@ class ViewModelTvShowTest {
             viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
             verify(apiMoviesObserver).onChanged(
-                Resource.Error(
+                State.Error(
                     RuntimeException(errorMessage).toString(),
                     TvShowData(any())
                 )

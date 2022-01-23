@@ -13,22 +13,24 @@ import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.viewmodel.MoviesFactory
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
-import com.zogik.cinema.utils.Resource
-import com.zogik.cinema.utils.Widget.showToast
-import com.zogik.cinema.utils.Widget.viewGone
-import com.zogik.cinema.utils.Widget.viewVisible
+import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Utils.showToast
+import com.zogik.cinema.utils.Utils.viewGone
+import com.zogik.cinema.utils.Utils.viewVisible
 
 class FragmentMovies : Fragment(R.layout.fragment_content) {
     private val api by lazy { ApiNetwork.getClient() }
     private val binding by viewBinding<FragmentContentBinding>()
     private lateinit var adapterMovies: MovieAdapter
     private lateinit var viewModelMovies: ViewModelMovies
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupViewModel()
         setupObserver()
         setupView()
+
+        viewModelMovies.getMovies()
     }
 
     private fun setupViewModel() {
@@ -39,21 +41,23 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
     }
 
     private fun setupObserver() {
+        EspressoTestingIdlingResource().increment()
         viewModelMovies.moviesData.observe(viewLifecycleOwner, {
             when (it) {
-                is Resource.Loading -> {
+                is State.Loading -> {
                     viewVisible(binding.loading)
                 }
-                is Resource.Success -> {
+                is State.Success -> {
                     viewGone(binding.loading)
                     adapterMovies.setData(it.data?.results)
                 }
-                is Resource.Error -> {
+                is State.Error -> {
                     viewGone(binding.loading)
                     viewVisible(binding.tvNoDataFound)
-                    showToast(requireContext(), "Data Can't be Loaded")
+                    showToast(requireContext(), getString(R.string.toast_text))
                 }
             }
+            EspressoTestingIdlingResource().decrement()
         })
     }
 
@@ -63,5 +67,10 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
         )
         binding.rvContent.layoutManager = LinearLayoutManager(requireContext())
         binding.rvContent.adapter = adapterMovies
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EspressoTestingIdlingResource().decrement()
     }
 }

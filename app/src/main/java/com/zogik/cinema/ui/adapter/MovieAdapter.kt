@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.databinding.ListItemAdapterBinding
+import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
 
 class MovieAdapter(
     private var movieArrayList: ArrayList<MovieData.ResultsItem>,

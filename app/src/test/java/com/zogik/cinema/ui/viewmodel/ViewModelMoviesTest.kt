@@ -6,7 +6,7 @@ import com.zogik.cinema.coroutines.CoroutinesTest
 import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.Repository
 import com.zogik.cinema.network.ApiNetwork
-import com.zogik.cinema.utils.Resource
+import com.zogik.cinema.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +30,7 @@ class ViewModelMoviesTest {
     private val repository = Repository(ApiNetwork.getClient())
 
     @Mock
-    private lateinit var apiMoviesObserver: Observer<Resource<MovieData?>>
+    private lateinit var apiMoviesObserver: Observer<State<MovieData?>>
 
     @Test
     fun successTest() {
@@ -43,7 +43,7 @@ class ViewModelMoviesTest {
             val viewModel = ViewModelMovies(repository)
             viewModel.moviesData.observeForever(apiMoviesObserver)
             verify(repository).getMovieList()
-            verify(apiMoviesObserver).onChanged(Resource.Success(MovieData(any())))
+            verify(apiMoviesObserver).onChanged(State.Success(MovieData(any())))
             viewModel.moviesData.removeObserver(apiMoviesObserver)
         }
     }
@@ -59,9 +59,9 @@ class ViewModelMoviesTest {
             viewModel.moviesData.observeForever(apiMoviesObserver)
             verify(repository).getMovieList()
             verify(apiMoviesObserver).onChanged(
-                Resource.Error(
+                State.Error(
                     RuntimeException(errorMessage).toString(),
-                    MovieData(any())
+                    MovieData(any()) // return MovieData = Null
                 )
             )
             viewModel.moviesData.removeObserver(apiMoviesObserver)

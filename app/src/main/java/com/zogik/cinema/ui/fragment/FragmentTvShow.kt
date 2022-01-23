@@ -13,8 +13,8 @@ import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.ui.adapter.TvShowAdapter
 import com.zogik.cinema.ui.viewmodel.TvShowFactory
 import com.zogik.cinema.ui.viewmodel.ViewModelTvShow
-import com.zogik.cinema.utils.Resource
-import com.zogik.cinema.utils.Widget
+import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Utils
 
 class FragmentTvShow : Fragment(R.layout.fragment_content) {
     private val api by lazy { ApiNetwork.getClient() }
@@ -39,17 +39,17 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
     private fun setupObserver() {
         viewModelTvShow.tvShowData.observe(viewLifecycleOwner, {
             when (it) {
-                is Resource.Loading -> {
-                    Widget.viewVisible(binding.loading)
+                is State.Loading -> {
+                    Utils.viewVisible(binding.loading)
                 }
-                is Resource.Success -> {
-                    Widget.viewGone(binding.loading)
+                is State.Success -> {
+                    Utils.viewGone(binding.loading)
                     adapterTvShow.setData(it.data?.results)
                 }
-                is Resource.Error -> {
-                    Widget.viewGone(binding.loading)
-                    Widget.viewVisible(binding.tvNoDataFound)
-                    Widget.showToast(requireContext(), "Data Can't be Loaded")
+                is State.Error -> {
+                    Utils.viewGone(binding.loading)
+                    Utils.viewVisible(binding.tvNoDataFound)
+                    Utils.showToast(requireContext(), "Data Can't be Loaded")
                 }
             }
         })

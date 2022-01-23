@@ -6,25 +6,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.Repository
-import com.zogik.cinema.utils.Resource
+import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
+import com.zogik.cinema.utils.State
 import kotlinx.coroutines.launch
 
 class ViewModelMovies(private val repository: Repository) : ViewModel() {
-    private val _moviesData: MutableLiveData<Resource<MovieData?>> =
+    private val _moviesData: MutableLiveData<State<MovieData?>> =
         MutableLiveData()
-    var moviesData: LiveData<Resource<MovieData?>> = _moviesData
+    var moviesData: LiveData<State<MovieData?>> = _moviesData
 
-    init {
-        getMovies()
-    }
+//    init {
+//        getMovies()
+//    }
 
     fun getMovies() = viewModelScope.launch {
-        _moviesData.value = Resource.Loading()
+        _moviesData.value = State.Loading()
         try {
             val response = repository.getMovieList()
-            _moviesData.value = Resource.Success(response.body())
+            _moviesData.value = State.Success(response.body())
         } catch (e: Exception) {
-            _moviesData.value = Resource.Error(e.message.toString())
+            _moviesData.value = State.Error(e.message.toString())
         }
     }
 }

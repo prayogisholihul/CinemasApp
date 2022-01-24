@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
+import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.Repository
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.network.ApiNetwork
+import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetail
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.viewmodel.MoviesFactory
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
@@ -63,7 +65,12 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
 
     private fun setupView() {
         adapterMovies = MovieAdapter(
-            arrayListOf(), requireContext()
+            arrayListOf(),
+            object : MovieAdapter.OnClickListener {
+                override fun setonClick(data: MovieData.ResultsItem) {
+                    requireContext().passToDetail(data)
+                }
+            }
         )
         binding.rvContent.layoutManager = LinearLayoutManager(requireContext())
         binding.rvContent.adapter = adapterMovies

@@ -6,4 +6,5 @@
     <string name="picture">picture_content</string>
 
     <string name="toast_text">Data Can\'t be Loaded</string>
+    <string name="detail_pict">detailPict</string>
 </resources>

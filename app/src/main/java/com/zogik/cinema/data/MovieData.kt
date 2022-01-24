@@ -1,6 +1,8 @@
 package com.zogik.cinema.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class MovieData(
 
@@ -17,6 +19,7 @@ data class MovieData(
     val totalResults: Int? = null
 ) {
 
+    @Parcelize
     data class ResultsItem(
 
         @field:SerializedName("overview")
@@ -60,5 +63,5 @@ data class MovieData(
 
         @field:SerializedName("vote_count")
         val voteCount: Int? = null
-    )
+    ) : Parcelable
 }

@@ -1,17 +1,15 @@
 package com.zogik.cinema.ui.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.databinding.ListItemAdapterBinding
-import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
 
 class MovieAdapter(
     private var movieArrayList: ArrayList<MovieData.ResultsItem>,
-    private val context: Context
+    private val listener: OnClickListener
 ) :
     RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
@@ -31,6 +29,8 @@ class MovieAdapter(
         holder.binding.name.text = movie.title
         holder.binding.name.isSelected = true
         holder.binding.date.text = movie.releaseDate
+
+        holder.binding.containerRoot.setOnClickListener { listener.setonClick(movie) }
     }
 
     override fun getItemCount() = movieArrayList.size
@@ -45,5 +45,9 @@ class MovieAdapter(
             movieArrayList.addAll(data)
         }
         notifyDataSetChanged()
+    }
+
+    interface OnClickListener {
+        fun setonClick(data: MovieData.ResultsItem)
     }
 }

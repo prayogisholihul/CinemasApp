@@ -15,6 +15,7 @@ import androidx.test.rule.ActivityTestRule
 import com.zogik.cinema.ui.activity.MainActivity
 import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
@@ -53,8 +54,9 @@ class ExampleInstrumentedTest {
     @Test
     fun successState() {
         onView(withId(R.id.loading)).check(matches((isDisplayed())))
-        onView(withId(R.id.rvContent)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.rvContent)).perform(ViewActions.swipeUp())
+        onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(
+            ViewActions.swipeUp()
+        )
 
 //        onView(withId(R.id.rvContent)).check(matches(isDisplayed()))
 //        onView(withId(R.id.loading)).check(matches(not(isDisplayed())))

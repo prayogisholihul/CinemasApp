@@ -15,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/ivPict"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/detail_pict"
@@ -27,8 +28,8 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:paddingTop="12dp"
         android:paddingHorizontal="12dp"
+        android:paddingTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cvPict">
@@ -40,23 +41,23 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/movieTitle"
+                android:id="@+id/contentTitle"
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
-                android:singleLine="true"
                 android:ellipsize="marquee"
-                android:marqueeRepeatLimit ="marquee_forever"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
-                tools:text="zxczxczxczxczxc" />
+                android:singleLine="true"
+                tools:text="Title Content" />
 
             <TextView
-                android:id="@+id/movieDate"
+                android:id="@+id/contentDate"
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
                 android:baselineAligned="false"
-                tools:text="zxczxczxczxczxc" />
+                tools:text="Date" />
         </LinearLayout>
 
         <LinearLayout
@@ -67,7 +68,7 @@
             tools:ignore="RtlSymmetry">
 
             <TextView
-                android:id="@+id/movieRating"
+                android:id="@+id/contentRating"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -89,5 +90,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearContent"
         tools:text="@tools:sample/lorem/random" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/share"
+        android:src="@android:drawable/ic_menu_share"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

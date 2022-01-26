@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.Repository
-import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
 import com.zogik.cinema.utils.State
 import kotlinx.coroutines.launch
 

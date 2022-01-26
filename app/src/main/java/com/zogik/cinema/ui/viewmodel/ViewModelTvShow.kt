@@ -14,11 +14,7 @@ class ViewModelTvShow(private val repository: Repository) : ViewModel() {
         MutableLiveData()
     var tvShowData: LiveData<State<TvShowData?>> = _tvShowData
 
-    init {
-        getTvShow()
-    }
-
-    private fun getTvShow() = viewModelScope.launch {
+    fun getTvShow() = viewModelScope.launch {
         _tvShowData.value = State.Loading()
         try {
             val response = repository.getTvShow()

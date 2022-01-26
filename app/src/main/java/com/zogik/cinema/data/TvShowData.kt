@@ -1,6 +1,8 @@
 package com.zogik.cinema.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class TvShowData(
 
@@ -16,6 +18,7 @@ data class TvShowData(
     @field:SerializedName("total_results")
     val totalResults: Int? = null
 ) {
+    @Parcelize
     data class ResultsItem(
 
         @field:SerializedName("first_air_date")
@@ -56,5 +59,5 @@ data class TvShowData(
 
         @field:SerializedName("vote_count")
         val voteCount: Int? = null
-    )
+    ) : Parcelable
 }

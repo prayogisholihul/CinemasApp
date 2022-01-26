@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
 import com.zogik.cinema.data.Repository
+import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.network.ApiNetwork
+import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailTv
 import com.zogik.cinema.ui.adapter.TvShowAdapter
 import com.zogik.cinema.ui.viewmodel.TvShowFactory
 import com.zogik.cinema.ui.viewmodel.ViewModelTvShow
@@ -27,6 +29,7 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
         setupViewModel()
         setupObserver()
         setupView()
+        viewModelTvShow.getTvShow()
     }
 
     private fun setupViewModel() {
@@ -57,7 +60,12 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
 
     private fun setupView() {
         adapterTvShow = TvShowAdapter(
-            arrayListOf(), requireContext()
+            arrayListOf(), requireContext(),
+            object : TvShowAdapter.OnClickListener {
+                override fun onClick(data: TvShowData.ResultsItem) {
+                    requireContext().passToDetailTv(data)
+                }
+            }
         )
         binding.rvContent.layoutManager = LinearLayoutManager(requireContext())
         binding.rvContent.adapter = adapterTvShow

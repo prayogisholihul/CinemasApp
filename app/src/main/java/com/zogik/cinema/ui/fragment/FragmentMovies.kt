@@ -11,7 +11,7 @@ import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.Repository
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.network.ApiNetwork
-import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetail
+import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailMovie
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.viewmodel.MoviesFactory
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
@@ -43,7 +43,6 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
     }
 
     private fun setupObserver() {
-        EspressoTestingIdlingResource().increment()
         viewModelMovies.moviesData.observe(viewLifecycleOwner, {
             when (it) {
                 is State.Loading -> {
@@ -59,25 +58,19 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
                     showToast(requireContext(), getString(R.string.toast_text))
                 }
             }
-            EspressoTestingIdlingResource().decrement()
         })
     }
 
     private fun setupView() {
         adapterMovies = MovieAdapter(
-            arrayListOf(),
+            arrayListOf(), requireContext(),
             object : MovieAdapter.OnClickListener {
                 override fun setonClick(data: MovieData.ResultsItem) {
-                    requireContext().passToDetail(data)
+                    requireContext().passToDetailMovie(data)
                 }
             }
         )
         binding.rvContent.layoutManager = LinearLayoutManager(requireContext())
         binding.rvContent.adapter = adapterMovies
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        EspressoTestingIdlingResource().decrement()
     }
 }

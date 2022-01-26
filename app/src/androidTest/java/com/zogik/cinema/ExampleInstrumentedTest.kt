@@ -1,23 +1,21 @@
 package com.zogik.cinema
 
 import android.view.View
-import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.zogik.cinema.ui.activity.MainActivity
-import com.zogik.cinema.ui.fragment.EspressoTestingIdlingResource
+import com.zogik.cinema.ui.adapter.MovieAdapter
+import com.zogik.cinema.ui.adapter.TvShowAdapter
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers.not
-import org.junit.After
-import org.junit.Before
+import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,30 +33,42 @@ class ExampleInstrumentedTest {
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Test
-    fun loadingState() {
-        onView(withId(R.id.loading)).check(matches(isDisplayed()))
-    }
-
-    @Before
-    fun registerIdlingResource() {
-        // let espresso know to synchronize with background tasks
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource().getIdlingResource())
-    }
-
-    @After
-    fun unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource().getIdlingResource())
+    fun moviesTest() {
+        onView(withId(R.id.loading)).check(matches((isDisplayed())))
+        onView(isRoot()).perform(waitFor(5000))
+        onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(swipeUp()).perform(swipeDown())
+        onView(withId(R.id.rvContent)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<MovieAdapter.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.contentTitle)).check(matches(isDisplayed()))
+        onView(withId(R.id.ivPict)).check(matches(isDisplayed()))
+        onView(withId(R.id.contentDate)).check(matches(isDisplayed()))
+        onView(withId(R.id.contentRating)).check(matches(isDisplayed()))
+        onView(withId(R.id.tvOverview)).check(matches(isDisplayed()))
+        onView(withId(R.id.fabShare)).perform(click())
     }
 
     @Test
-    fun successState() {
+    fun tvShowTest() {
         onView(withId(R.id.loading)).check(matches((isDisplayed())))
-        onView(withId(R.id.rvContent)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.rvContent)).perform(ViewActions.swipeUp())
-
-//        onView(withId(R.id.rvContent)).check(matches(isDisplayed()))
-//        onView(withId(R.id.loading)).check(matches(not(isDisplayed())))
-//        onView(withId(R.id.rvContent)).perform(ViewActions.swipeUp())
+        onView(allOf(withText(R.string.tv_show_banner))).perform(click())
+        onView(isRoot()).perform(waitFor(5000))
+        onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(swipeUp()).perform(swipeDown())
+        onView(withId(R.id.rvContent)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<TvShowAdapter.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.contentTitle)).check(matches(isDisplayed()))
+        onView(withId(R.id.ivPict)).check(matches(isDisplayed()))
+        onView(withId(R.id.contentDate)).check(matches(isDisplayed()))
+        onView(withId(R.id.contentRating)).check(matches(isDisplayed()))
+        onView(withId(R.id.tvOverview)).check(matches(isDisplayed()))
+        onView(withId(R.id.fabShare)).perform(click())
     }
 
     private fun waitFor(delay: Long): ViewAction {

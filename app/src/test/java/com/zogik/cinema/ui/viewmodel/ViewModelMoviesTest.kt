@@ -8,13 +8,19 @@ import com.zogik.cinema.data.Repository
 import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -30,21 +36,32 @@ class ViewModelMoviesTest {
     private val repository = Repository(ApiNetwork.getClient())
 
     @Mock
+    private lateinit var viewModel: ViewModelMovies
+
+    @Mock
     private lateinit var apiMoviesObserver: Observer<State<MovieData?>>
+
+    @Captor
+    private lateinit var argumentCaptor: ArgumentCaptor<State<MovieData?>>
+
+    @Before
+    fun setup() {
+        viewModel = ViewModelMovies(repository)
+    }
 
     @Test
     fun successTest() {
         testCoroutineRule.runBlockingTest {
-            doReturn(
-                MovieData()
-            )
-                .`when`(repository)
-                .getMovieList()
-            val viewModel = ViewModelMovies(repository)
-            viewModel.moviesData.observeForever(apiMoviesObserver)
+            `when`(repository.getMovieList())
+                .thenReturn(Response.success(MovieData()))
+            viewModel.getMovies()
             verify(repository).getMovieList()
-            verify(apiMoviesObserver).onChanged(State.Success(MovieData(any())))
+            viewModel.moviesData.observeForever(apiMoviesObserver)
+            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.moviesData.removeObserver(apiMoviesObserver)
+
+            val data: MovieData? = argumentCaptor.value.data
+            Assert.assertNotNull(data)
         }
     }
 
@@ -52,19 +69,16 @@ class ViewModelMoviesTest {
     fun errorTest() {
         testCoroutineRule.runBlockingTest {
             val errorMessage = "Data Can't Be Loaded"
-            doThrow(RuntimeException(errorMessage))
-                .`when`(repository)
-                .getMovieList()
-            val viewModel = ViewModelMovies(repository)
-            viewModel.moviesData.observeForever(apiMoviesObserver)
+            `when`(repository.getMovieList())
+                .thenThrow(RuntimeException(errorMessage))
+            viewModel.getMovies()
             verify(repository).getMovieList()
-            verify(apiMoviesObserver).onChanged(
-                State.Error(
-                    RuntimeException(errorMessage).toString(),
-                    MovieData(any()) // return MovieData = Null
-                )
-            )
+            viewModel.moviesData.observeForever(apiMoviesObserver)
+            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.moviesData.removeObserver(apiMoviesObserver)
+
+            val data: MovieData? = argumentCaptor.value.data
+            Assert.assertNull(data)
         }
     }
 }

@@ -8,13 +8,20 @@ import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.doThrow
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -30,21 +37,32 @@ class ViewModelTvShowTest {
     private val repository = Repository(ApiNetwork.getClient())
 
     @Mock
+    private lateinit var viewModel: ViewModelTvShow
+
+    @Mock
     private lateinit var apiMoviesObserver: Observer<State<TvShowData?>>
+
+    @Captor
+    private lateinit var argumentCaptor: ArgumentCaptor<State<TvShowData?>>
+
+    @Before
+    fun setup() {
+        viewModel = ViewModelTvShow(repository)
+    }
 
     @Test
     fun successTest() {
         testCoroutineRule.runBlockingTest {
-            doReturn(
-                TvShowData()
-            )
-                .`when`(repository)
-                .getTvShow()
-            val viewModel = ViewModelTvShow(repository)
+            `when`(repository.getTvShow())
+                .thenReturn(Response.success(TvShowData()))
+            viewModel.getTvShow()
             viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
-            verify(apiMoviesObserver).onChanged(State.Success(TvShowData(any())))
+            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.tvShowData.removeObserver(apiMoviesObserver)
+
+            val data: TvShowData? = argumentCaptor.value.data
+            Assert.assertNotNull(data)
         }
     }
 
@@ -55,16 +73,14 @@ class ViewModelTvShowTest {
             doThrow(RuntimeException(errorMessage))
                 .`when`(repository)
                 .getTvShow()
-            val viewModel = ViewModelTvShow(repository)
+            viewModel.getTvShow()
             viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
-            verify(apiMoviesObserver).onChanged(
-                State.Error(
-                    RuntimeException(errorMessage).toString(),
-                    TvShowData(any())
-                )
-            )
+            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.tvShowData.removeObserver(apiMoviesObserver)
+
+            val data: TvShowData? = argumentCaptor.value.data
+            Assert.assertNull(data)
         }
     }
 }

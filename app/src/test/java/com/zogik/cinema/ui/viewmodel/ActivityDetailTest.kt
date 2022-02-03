@@ -49,7 +49,7 @@ class ActivityDetailTest {
             posterPath = "foto",
             releaseDate = "12-12-2022",
             overview = "Mantap",
-            popularity = 9.0
+            voteAverage = 9.0
         )
 
         viewModel.setDataDetailMovie(movieData)
@@ -67,7 +67,7 @@ class ActivityDetailTest {
             posterPath = "foto",
             firstAirDate = "12-12-2022",
             overview = "Mantap",
-            popularity = 9.0
+            voteAverage = 9.0
         )
 
         viewModel.setDataDetailTv(tvData)

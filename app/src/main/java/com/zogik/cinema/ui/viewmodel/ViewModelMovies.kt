@@ -14,10 +14,6 @@ class ViewModelMovies(private val repository: Repository) : ViewModel() {
         MutableLiveData()
     var moviesData: LiveData<State<MovieData?>> = _moviesData
 
-//    init {
-//        getMovies()
-//    }
-
     fun getMovies() = viewModelScope.launch {
         _moviesData.value = State.Loading()
         try {

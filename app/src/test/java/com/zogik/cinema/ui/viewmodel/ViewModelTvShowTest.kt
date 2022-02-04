@@ -53,14 +53,19 @@ class ViewModelTvShowTest {
     @Test
     fun successTest() {
         testCoroutineRule.runBlockingTest {
+
+            // TEST REPOSITORY
             `when`(repository.getTvShow())
                 .thenReturn(Response.success(TvShowData()))
             viewModel.getTvShow()
-            viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
+
+            // Test ViewModel
+            viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.tvShowData.removeObserver(apiMoviesObserver)
 
+            // test data yang direturn dari repo
             val data: TvShowData? = argumentCaptor.value.data
             Assert.assertNotNull(data)
         }
@@ -69,16 +74,21 @@ class ViewModelTvShowTest {
     @Test
     fun errorTest() {
         testCoroutineRule.runBlockingTest {
+
+            // TEST REPOSITORY
             val errorMessage = "Data Can't Be Loaded"
             doThrow(RuntimeException(errorMessage))
                 .`when`(repository)
                 .getTvShow()
             viewModel.getTvShow()
-            viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(repository).getTvShow()
+
+            // Test ViewModel
+            viewModel.tvShowData.observeForever(apiMoviesObserver)
             verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.tvShowData.removeObserver(apiMoviesObserver)
 
+            // test data yang direturn dari repo
             val data: TvShowData? = argumentCaptor.value.data
             Assert.assertNull(data)
         }

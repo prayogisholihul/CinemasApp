@@ -1,31 +1,26 @@
 package com.zogik.cinema
 
-import android.view.View
+import android.content.Context
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import androidx.test.rule.ActivityTestRule
+import androidx.test.platform.app.InstrumentationRegistry
 import com.zogik.cinema.ui.activity.MainActivity
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.adapter.TvShowAdapter
 import com.zogik.cinema.utils.IdlingResource
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -35,14 +30,14 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-@LargeTest
 class InstrumentedTest {
 
-    @get:Rule
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    private lateinit var instrumentalContext: Context
 
     @Before
     fun register() {
+        instrumentalContext = InstrumentationRegistry.getInstrumentation().targetContext
+        ActivityScenario.launch(MainActivity::class.java)
         IdlingRegistry.getInstance().register(IdlingResource.idlingresource)
     }
 
@@ -54,7 +49,6 @@ class InstrumentedTest {
     @Test
     fun moviesTest() {
         onView(withId(R.id.loading)).check(matches((isDisplayed())))
-        onView(isRoot()).perform(waitFor(5000))
         onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(swipeUp()).perform(swipeDown())
         onView(withId(R.id.rvContent)).perform(
             RecyclerViewActions.actionOnItemAtPosition<MovieAdapter.ViewHolder>(
@@ -74,7 +68,6 @@ class InstrumentedTest {
     fun tvShowTest() {
         onView(withId(R.id.loading)).check(matches((isDisplayed())))
         onView(allOf(withText(R.string.tv_show_banner))).perform(click())
-        onView(isRoot()).perform(waitFor(5000))
         onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(swipeUp()).perform(swipeDown())
         onView(withId(R.id.rvContent)).perform(
             RecyclerViewActions.actionOnItemAtPosition<TvShowAdapter.ViewHolder>(
@@ -88,15 +81,5 @@ class InstrumentedTest {
         onView(withId(R.id.contentRating)).check(matches(isDisplayed()))
         onView(withId(R.id.tvOverview)).check(matches(isDisplayed()))
         onView(withId(R.id.fabShare)).perform(click())
-    }
-
-    private fun waitFor(delay: Long): ViewAction {
-        return object : ViewAction {
-            override fun getConstraints(): Matcher<View> = isRoot()
-            override fun getDescription(): String = "wait for $delay milliseconds"
-            override fun perform(uiController: UiController, v: View?) {
-                uiController.loopMainThreadForAtLeast(delay)
-            }
-        }
     }
 }

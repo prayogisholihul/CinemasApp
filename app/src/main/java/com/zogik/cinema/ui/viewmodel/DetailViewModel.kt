@@ -3,27 +3,37 @@ package com.zogik.cinema.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.zogik.cinema.data.MovieData
-import com.zogik.cinema.data.TvShowData
+import androidx.lifecycle.viewModelScope
+import com.zogik.cinema.data.DetailMovieData
+import com.zogik.cinema.data.DetailTvData
+import com.zogik.cinema.data.Repository
+import com.zogik.cinema.utils.State
+import kotlinx.coroutines.launch
 
-class DetailViewModel : ViewModel() {
-    private val _dataDetailMovie: MutableLiveData<MovieData.ResultsItem?> = MutableLiveData()
-    var dataDetailMovie: LiveData<MovieData.ResultsItem?> = _dataDetailMovie
+class DetailViewModel(private val repository: Repository) : ViewModel() {
+    private val _dataDetailMovie: MutableLiveData<State<DetailMovieData?>> = MutableLiveData()
+    var dataDetailMovie: LiveData<State<DetailMovieData?>> = _dataDetailMovie
 
-    @JvmName("getDataDetailMovie1")
-    fun getDataDetailMovie() = dataDetailMovie
-
-    fun setDataDetailMovie(data: MovieData.ResultsItem?) {
-        _dataDetailMovie.value = data
+    fun getDetailMovie(movieId: Int) = viewModelScope.launch {
+        _dataDetailMovie.value = State.Loading()
+        try {
+            val response = repository.getDetailsMovie(movieId)
+            _dataDetailMovie.value = State.Success(response.body())
+        } catch (e: Exception) {
+            _dataDetailMovie.value = State.Error(e.message.toString())
+        }
     }
 
-    private val _dataDetailTv: MutableLiveData<TvShowData.ResultsItem?> = MutableLiveData()
-    val dataDetailTv: LiveData<TvShowData.ResultsItem?> = _dataDetailTv
+    private val _dataDetailTv: MutableLiveData<State<DetailTvData?>> = MutableLiveData()
+    val dataDetailTv: LiveData<State<DetailTvData?>> = _dataDetailTv
 
-    @JvmName("getDataDetailTv1")
-    fun getDataDetailTv() = dataDetailTv
-
-    fun setDataDetailTv(data: TvShowData.ResultsItem?) {
-        _dataDetailTv.value = data
+    fun getDetailTv(tvId: Int) = viewModelScope.launch {
+        _dataDetailTv.value = State.Loading()
+        try {
+            val response = repository.getDetailsTv(tvId)
+            _dataDetailTv.value = State.Success(response.body())
+        } catch (e: Exception) {
+            _dataDetailTv.value = State.Error(e.message.toString())
+        }
     }
 }

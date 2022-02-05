@@ -1,6 +1,8 @@
 package com.zogik.cinema.ui.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupObserver()
         setupView()
 
@@ -32,15 +35,19 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
     }
 
     private fun setupObserver() {
-        IdlingResource.increment()
+
         viewModelMovies.moviesData.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
                     viewVisible(binding.loading)
                 }
                 is State.Success -> {
-                    viewGone(binding.loading)
-                    adapterMovies.setData(it.data?.results)
+                    IdlingResource.increment()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        viewGone(binding.loading)
+                        adapterMovies.setData(it.data?.results)
+                        IdlingResource.decrement()
+                    }, 4000)
                 }
                 is State.Error -> {
                     viewGone(binding.loading)
@@ -49,7 +56,6 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
                 }
             }
         }
-        IdlingResource.decrement()
     }
 
     private fun setupView() {

@@ -2,6 +2,8 @@ package com.zogik.cinema.ui.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -12,7 +14,11 @@ import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.databinding.ActivityDetailBinding
 import com.zogik.cinema.ui.viewmodel.DetailViewModel
+import com.zogik.cinema.utils.IdlingResource
+import com.zogik.cinema.utils.State
 import com.zogik.cinema.utils.Utils
+import com.zogik.cinema.utils.Utils.viewGone
+import com.zogik.cinema.utils.Utils.viewVisible
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
@@ -25,8 +31,7 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         super.onCreate(savedInstanceState)
         setObserve()
         setButton()
-        viewModel.setDataDetailMovie(dataMovie)
-        viewModel.setDataDetailTv(dataTv)
+        setVM()
     }
 
     private fun setButton() {
@@ -35,38 +40,77 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         }
     }
 
+    private fun setVM() {
+        if (dataMovie != null)
+            dataMovie?.id?.let { viewModel.getDetailMovie(it) }
+        if (dataTv != null)
+            dataTv?.id?.let { viewModel.getDetailTv(it) }
+    }
+
     private fun setObserve() {
         val imageLink = "https://image.tmdb.org/t/p/w500"
-        if (dataMovie != null) {
-            viewModel.getDataDetailMovie().observe(
-                this
-            ) {
-                binding.contentTitle.text = it?.title
-                binding.contentTitle.isSelected = true
-                binding.contentDate.text = it?.releaseDate
-                binding.contentRating.text = it?.voteAverage?.toString()
-                binding.tvOverview.text = it?.overview
 
-                Glide.with(this)
-                    .load(imageLink + it?.posterPath)
-                    .centerCrop()
-                    .placeholder(android.R.drawable.ic_menu_gallery)
-                    .into(binding.ivPict)
+        viewModel.dataDetailMovie.observe(
+            this
+        ) {
+            when (it) {
+                is State.Loading -> {
+                    viewVisible(binding.loading)
+                }
+                is State.Success -> {
+                    IdlingResource.increment()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        viewGone(binding.loading)
+                        binding.contentTitle.text = it.data?.title
+                        binding.contentTitle.isSelected = true
+                        binding.contentDate.text = it.data?.releaseDate
+                        binding.contentRating.text = it.data?.voteAverage?.toString()
+                        binding.tvOverview.text = it.data?.overview
+
+                        Glide.with(this)
+                            .load(imageLink + it.data?.posterPath)
+                            .centerCrop()
+                            .placeholder(android.R.drawable.ic_menu_gallery)
+                            .into(binding.ivPict)
+
+                        IdlingResource.decrement()
+                    }, 3000)
+                }
+                is State.Error -> {
+                    viewGone(binding.loading)
+                    Utils.showToast(this, getString(R.string.toast_text))
+                }
             }
         }
-        if (dataTv != null) {
-            viewModel.getDataDetailTv().observe(this) {
-                binding.contentTitle.text = it?.name
-                binding.contentTitle.isSelected = true
-                binding.contentDate.text = it?.firstAirDate
-                binding.contentRating.text = it?.voteAverage?.toString()
-                binding.tvOverview.text = it?.overview
 
-                Glide.with(this)
-                    .load(imageLink + it?.posterPath)
-                    .centerCrop()
-                    .placeholder(android.R.drawable.ic_menu_gallery)
-                    .into(binding.ivPict)
+        viewModel.dataDetailTv.observe(this) {
+            when (it) {
+                is State.Loading -> {
+                    viewVisible(binding.loading)
+                }
+                is State.Success -> {
+                    IdlingResource.increment()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        viewGone(binding.loading)
+                        binding.contentTitle.text = it.data?.name
+                        binding.contentTitle.isSelected = true
+                        binding.contentDate.text = it.data?.firstAirDate
+                        binding.contentRating.text = it.data?.voteAverage?.toString()
+                        binding.tvOverview.text = it.data?.overview
+
+                        Glide.with(this)
+                            .load(imageLink + it.data?.posterPath)
+                            .centerCrop()
+                            .placeholder(android.R.drawable.ic_menu_gallery)
+                            .into(binding.ivPict)
+
+                        IdlingResource.decrement()
+                    }, 4000)
+                }
+                is State.Error -> {
+                    viewGone(binding.loading)
+                    Utils.showToast(this, getString(R.string.toast_text))
+                }
             }
         }
     }

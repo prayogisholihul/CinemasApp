@@ -20,7 +20,7 @@ class Application : Application() {
             ViewModelTvShow(get())
         }
         viewModel {
-            DetailViewModel()
+            DetailViewModel(get())
         }
     }
 

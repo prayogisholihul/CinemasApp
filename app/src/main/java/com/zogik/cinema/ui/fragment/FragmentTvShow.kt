@@ -1,6 +1,8 @@
 package com.zogik.cinema.ui.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,8 +38,12 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
                     Utils.viewVisible(binding.loading)
                 }
                 is State.Success -> {
-                    Utils.viewGone(binding.loading)
-                    adapterTvShow.setData(it.data?.results)
+                    IdlingResource.increment()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Utils.viewGone(binding.loading)
+                        adapterTvShow.setData(it.data?.results)
+                        IdlingResource.decrement()
+                    }, 5000)
                 }
                 is State.Error -> {
                     Utils.viewGone(binding.loading)

@@ -30,6 +30,9 @@ data class TvShowData(
         @field:SerializedName("poster_path")
         val posterPath: String? = null,
 
+        @field:SerializedName("id")
+        val id: Int? = null,
+
         @field:SerializedName("vote_average")
         val voteAverage: Double? = null,
 

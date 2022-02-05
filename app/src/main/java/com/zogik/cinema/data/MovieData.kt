@@ -28,6 +28,9 @@ data class MovieData(
         @field:SerializedName("title")
         val title: String? = null,
 
+        @field:SerializedName("id")
+        val id: Int? = null,
+
         @field:SerializedName("poster_path")
         val posterPath: String? = null,
 

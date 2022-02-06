@@ -4,16 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.zogik.cinema.data.MovieData
+import com.zogik.cinema.data.ResultsItem
 import com.zogik.cinema.data.TvShowData
 
 class DetailViewModel : ViewModel() {
-    private val _dataDetailMovie: MutableLiveData<MovieData.ResultsItem?> = MutableLiveData()
-    var dataDetailMovie: LiveData<MovieData.ResultsItem?> = _dataDetailMovie
+    private val _dataDetailMovie: MutableLiveData<ResultsItem?> = MutableLiveData()
+    var dataDetailMovie: LiveData<ResultsItem?> = _dataDetailMovie
 
     @JvmName("getDataDetailMovie1")
     fun getDataDetailMovie() = dataDetailMovie
 
-    fun setDataDetailMovie(data: MovieData.ResultsItem?) {
+    fun setDataDetailMovie(data: ResultsItem?) {
         _dataDetailMovie.value = data
     }
 

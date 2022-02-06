@@ -9,6 +9,7 @@ import com.skydoves.bundler.bundle
 import com.skydoves.bundler.intentOf
 import com.zogik.cinema.R
 import com.zogik.cinema.data.MovieData
+import com.zogik.cinema.data.ResultsItem
 import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.databinding.ActivityDetailBinding
 import com.zogik.cinema.ui.viewmodel.DetailViewModel
@@ -16,7 +17,7 @@ import com.zogik.cinema.utils.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
-    private val dataMovie: MovieData.ResultsItem? by bundle(PASS_DATA_MOVIE)
+    private val dataMovie: ResultsItem? by bundle(PASS_DATA_MOVIE)
     private val dataTv: TvShowData.ResultsItem? by bundle(PASS_DATA_TV)
     private val binding by viewBinding<ActivityDetailBinding>()
     private val viewModel: DetailViewModel by viewModel()
@@ -75,10 +76,10 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         const val PASS_DATA_MOVIE = "MOVIE"
         const val PASS_DATA_TV = "TV"
 
-        fun Context.passToDetailMovie(data: MovieData.ResultsItem) = intentOf<ActivityDetail> {
-            +(PASS_DATA_MOVIE to data)
-            startActivity(this@passToDetailMovie)
-        }
+//        fun Context.passToDetailMovie(data: MovieData.ResultsItem) = intentOf<ActivityDetail> {
+//            +(PASS_DATA_MOVIE to data)
+//            startActivity(this@passToDetailMovie)
+//        }
 
         fun Context.passToDetailTv(data: TvShowData.ResultsItem) = intentOf<ActivityDetail> {
             +(PASS_DATA_TV to data)

@@ -6,14 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
-import com.zogik.cinema.data.MovieData
+import com.zogik.cinema.data.ResultsItem
 import com.zogik.cinema.databinding.FragmentContentBinding
-import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailMovie
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
-import com.zogik.cinema.utils.IdlingResource
-import com.zogik.cinema.utils.State
-import com.zogik.cinema.utils.Utils.showToast
+import com.zogik.cinema.utils.Result
 import com.zogik.cinema.utils.Utils.viewGone
 import com.zogik.cinema.utils.Utils.viewVisible
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,37 +24,29 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
         super.onViewCreated(view, savedInstanceState)
         setupObserver()
         setupView()
-
-        viewModelMovies.getMovies()
     }
 
     private fun setupObserver() {
-        IdlingResource.increment()
-        viewModelMovies.moviesData.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
+        viewModelMovies.moviesPagingData.observe(viewLifecycleOwner) {
+            when (it.status) {
+                Result.Status.LOADING -> {
                     viewVisible(binding.loading)
                 }
-                is State.Success -> {
+                Result.Status.SUCCESS -> {
                     viewGone(binding.loading)
-                    adapterMovies.setData(it.data?.results)
+                    adapterMovies.setData(it.data)
                 }
-                is State.Error -> {
-                    viewGone(binding.loading)
-                    viewVisible(binding.tvNoDataFound)
-                    showToast(requireContext(), getString(R.string.toast_text))
-                }
+                Result.Status.ERROR -> {}
             }
         }
-        IdlingResource.decrement()
     }
 
     private fun setupView() {
         adapterMovies = MovieAdapter(
             arrayListOf(), requireContext(),
             object : MovieAdapter.OnClickListener {
-                override fun setonClick(data: MovieData.ResultsItem) {
-                    requireContext().passToDetailMovie(data)
+                override fun setonClick(data: ResultsItem) {
+//                    requireContext().passToDetailMovie(data)
                 }
             }
         )

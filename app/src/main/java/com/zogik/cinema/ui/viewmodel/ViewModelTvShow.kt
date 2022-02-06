@@ -16,8 +16,8 @@ class ViewModelTvShow(private val repository: Repository) : ViewModel() {
 
     fun getTvShow() = viewModelScope.launch {
         _tvShowData.value = State.Loading()
+        val response = repository.getTvShow()
         try {
-            val response = repository.getTvShow()
             _tvShowData.value = State.Success(response.body())
         } catch (e: Exception) {
             _tvShowData.value = State.Error(e.message.toString())

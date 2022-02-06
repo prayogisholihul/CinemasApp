@@ -52,8 +52,6 @@ class ViewModelMoviesTest {
     @Test
     fun successTest() {
         testCoroutineRule.runBlockingTest {
-
-            // TEST REPOSITORY
             `when`(repository.getMovieList())
                 .thenReturn(Response.success(MovieData()))
             viewModel.getMovies()
@@ -74,8 +72,6 @@ class ViewModelMoviesTest {
     fun errorTest() {
         testCoroutineRule.runBlockingTest {
             val errorMessage = "Data Can't Be Loaded"
-
-            // TEST REPOSITORY
             `when`(repository.getMovieList())
                 .thenThrow(RuntimeException(errorMessage))
             viewModel.getMovies()
@@ -86,7 +82,7 @@ class ViewModelMoviesTest {
             verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
             viewModel.moviesData.removeObserver(apiMoviesObserver)
 
-            // test data yang direturn dari repo
+            // test data yang direturn
             val data: MovieData? = argumentCaptor.value.data
             Assert.assertNull(data)
         }

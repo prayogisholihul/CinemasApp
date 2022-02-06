@@ -1,8 +1,6 @@
 package com.zogik.cinema.ui.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,23 +25,20 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
 
         setupObserver()
         setupView()
+        IdlingResource.increment()
         viewModelTvShow.getTvShow()
+        IdlingResource.decrement()
     }
 
     private fun setupObserver() {
-        IdlingResource.increment()
         viewModelTvShow.tvShowData.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
                     Utils.viewVisible(binding.loading)
                 }
                 is State.Success -> {
-                    IdlingResource.increment()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        Utils.viewGone(binding.loading)
-                        adapterTvShow.setData(it.data?.results)
-                        IdlingResource.decrement()
-                    }, 5000)
+                    Utils.viewGone(binding.loading)
+                    adapterTvShow.setData(it.data?.results)
                 }
                 is State.Error -> {
                     Utils.viewGone(binding.loading)

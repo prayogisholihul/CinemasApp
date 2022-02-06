@@ -2,8 +2,6 @@ package com.zogik.cinema.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -41,10 +39,16 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
     }
 
     private fun setVM() {
-        if (dataMovie != null)
+        if (dataMovie != null) {
+            IdlingResource.increment()
             dataMovie?.id?.let { viewModel.getDetailMovie(it) }
-        if (dataTv != null)
+            IdlingResource.decrement()
+        }
+        if (dataTv != null) {
+            IdlingResource.increment()
             dataTv?.id?.let { viewModel.getDetailTv(it) }
+            IdlingResource.decrement()
+        }
     }
 
     private fun setObserve() {
@@ -58,23 +62,18 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                     viewVisible(binding.loading)
                 }
                 is State.Success -> {
-                    IdlingResource.increment()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        viewGone(binding.loading)
-                        binding.contentTitle.text = it.data?.title
-                        binding.contentTitle.isSelected = true
-                        binding.contentDate.text = it.data?.releaseDate
-                        binding.contentRating.text = it.data?.voteAverage?.toString()
-                        binding.tvOverview.text = it.data?.overview
+                    viewGone(binding.loading)
+                    binding.contentTitle.text = it.data?.title
+                    binding.contentTitle.isSelected = true
+                    binding.contentDate.text = it.data?.releaseDate
+                    binding.contentRating.text = it.data?.voteAverage?.toString()
+                    binding.tvOverview.text = it.data?.overview
 
-                        Glide.with(this)
-                            .load(imageLink + it.data?.posterPath)
-                            .centerCrop()
-                            .placeholder(android.R.drawable.ic_menu_gallery)
-                            .into(binding.ivPict)
-
-                        IdlingResource.decrement()
-                    }, 3000)
+                    Glide.with(this)
+                        .load(imageLink + it.data?.posterPath)
+                        .centerCrop()
+                        .placeholder(android.R.drawable.ic_menu_gallery)
+                        .into(binding.ivPict)
                 }
                 is State.Error -> {
                     viewGone(binding.loading)
@@ -89,23 +88,18 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                     viewVisible(binding.loading)
                 }
                 is State.Success -> {
-                    IdlingResource.increment()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        viewGone(binding.loading)
-                        binding.contentTitle.text = it.data?.name
-                        binding.contentTitle.isSelected = true
-                        binding.contentDate.text = it.data?.firstAirDate
-                        binding.contentRating.text = it.data?.voteAverage?.toString()
-                        binding.tvOverview.text = it.data?.overview
+                    viewGone(binding.loading)
+                    binding.contentTitle.text = it.data?.name
+                    binding.contentTitle.isSelected = true
+                    binding.contentDate.text = it.data?.firstAirDate
+                    binding.contentRating.text = it.data?.voteAverage?.toString()
+                    binding.tvOverview.text = it.data?.overview
 
-                        Glide.with(this)
-                            .load(imageLink + it.data?.posterPath)
-                            .centerCrop()
-                            .placeholder(android.R.drawable.ic_menu_gallery)
-                            .into(binding.ivPict)
-
-                        IdlingResource.decrement()
-                    }, 4000)
+                    Glide.with(this)
+                        .load(imageLink + it.data?.posterPath)
+                        .centerCrop()
+                        .placeholder(android.R.drawable.ic_menu_gallery)
+                        .into(binding.ivPict)
                 }
                 is State.Error -> {
                     viewGone(binding.loading)

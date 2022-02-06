@@ -67,7 +67,7 @@ class InstrumentedTest {
     @Test
     fun tvShowTest() {
         onView(withId(R.id.loading)).check(matches((isDisplayed())))
-        onView(allOf(withText(R.string.tv_show_banner))).perform(click())
+        onView(withText(R.string.tv_show_banner)).perform(click())
         onView(allOf(withId(R.id.rvContent), isDisplayed())).perform(swipeUp()).perform(swipeDown())
         onView(withId(R.id.rvContent)).perform(
             RecyclerViewActions.actionOnItemAtPosition<TvShowAdapter.ViewHolder>(

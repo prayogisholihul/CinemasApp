@@ -16,8 +16,8 @@ class ViewModelMovies(private val repository: Repository) : ViewModel() {
 
     fun getMovies() = viewModelScope.launch {
         _moviesData.value = State.Loading()
+        val response = repository.getMovieList()
         try {
-            val response = repository.getMovieList()
             _moviesData.value = State.Success(response.body())
         } catch (e: Exception) {
             _moviesData.value = State.Error(e.message.toString())

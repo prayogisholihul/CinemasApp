@@ -42,11 +42,13 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
                 is State.Success -> {
                     viewGone(binding.loading)
                     adapterMovies.setData(it.data?.results)
+                    IdlingResource.decrement()
                 }
                 is State.Error -> {
                     viewGone(binding.loading)
                     viewVisible(binding.tvNoDataFound)
                     showToast(requireContext(), getString(R.string.toast_text))
+                    IdlingResource.decrement()
                 }
             }
         }

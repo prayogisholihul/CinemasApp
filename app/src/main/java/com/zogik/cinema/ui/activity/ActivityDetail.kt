@@ -74,10 +74,12 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                         .centerCrop()
                         .placeholder(android.R.drawable.ic_menu_gallery)
                         .into(binding.ivPict)
+                    IdlingResource.decrement()
                 }
                 is State.Error -> {
                     viewGone(binding.loading)
                     Utils.showToast(this, getString(R.string.toast_text))
+                    IdlingResource.decrement()
                 }
             }
         }
@@ -100,10 +102,12 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                         .centerCrop()
                         .placeholder(android.R.drawable.ic_menu_gallery)
                         .into(binding.ivPict)
+                    IdlingResource.decrement()
                 }
                 is State.Error -> {
                     viewGone(binding.loading)
                     Utils.showToast(this, getString(R.string.toast_text))
+                    IdlingResource.decrement()
                 }
             }
         }

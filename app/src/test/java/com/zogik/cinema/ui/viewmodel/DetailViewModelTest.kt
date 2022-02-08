@@ -25,7 +25,7 @@ import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ActivityDetailTest {
+class DetailViewModelTest {
 
     @get:Rule
     val testInstantTaskExecutorRule: TestRule = InstantTaskExecutorRule()

@@ -27,7 +27,6 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
         setupView()
         IdlingResource.increment()
         viewModelTvShow.getTvShow()
-        IdlingResource.decrement()
     }
 
     private fun setupObserver() {
@@ -39,11 +38,13 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
                 is State.Success -> {
                     Utils.viewGone(binding.loading)
                     adapterTvShow.setData(it.data?.results)
+                    IdlingResource.decrement()
                 }
                 is State.Error -> {
                     Utils.viewGone(binding.loading)
                     Utils.viewVisible(binding.tvNoDataFound)
                     Utils.showToast(requireContext(), "Data Can't be Loaded")
+                    IdlingResource.decrement()
                 }
             }
         }

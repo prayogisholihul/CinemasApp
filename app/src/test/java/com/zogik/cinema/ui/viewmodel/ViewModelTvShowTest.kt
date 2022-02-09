@@ -6,7 +6,7 @@ import com.zogik.cinema.coroutines.CoroutinesTest
 import com.zogik.cinema.data.Repository
 import com.zogik.cinema.data.TvShowData
 import com.zogik.cinema.network.ApiNetwork
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Before
@@ -40,10 +40,10 @@ class ViewModelTvShowTest {
     private lateinit var viewModel: ViewModelTvShow
 
     @Mock
-    private lateinit var apiMoviesObserver: Observer<State<TvShowData?>>
+    private lateinit var apiMoviesObserver: Observer<Result<TvShowData?>>
 
     @Captor
-    private lateinit var argumentCaptor: ArgumentCaptor<State<TvShowData?>>
+    private lateinit var argumentCaptor: ArgumentCaptor<Result<TvShowData?>>
 
     @Before
     fun setup() {

@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zogik.cinema.R
-import com.zogik.cinema.data.MovieData
+import com.zogik.cinema.data.ResultsItem
+import com.zogik.cinema.data.room.MovieEntity
 import com.zogik.cinema.databinding.ListItemAdapterBinding
 
 class MovieAdapter(
-    private var movieArrayList: ArrayList<MovieData.ResultsItem>,
+    private var movieArrayList: ArrayList<MovieEntity>,
     private val context: Context,
     private val listener: OnClickListener
 ) :
@@ -40,7 +41,7 @@ class MovieAdapter(
             .placeholder(R.drawable.ic_launcher_foreground)
             .into(holder.binding.imageView)
 
-        holder.binding.containerRoot.setOnClickListener { listener.setonClick(movie) }
+//        holder.binding.containerRoot.setOnClickListener { listener.setonClick(movie) }
     }
 
     override fun getItemCount() = movieArrayList.size
@@ -49,7 +50,7 @@ class MovieAdapter(
         RecyclerView.ViewHolder(binding.root)
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setData(data: List<MovieData.ResultsItem>?) {
+    fun setData(data: List<MovieEntity>?) {
         movieArrayList.clear()
         if (data != null) {
             movieArrayList.addAll(data)
@@ -58,6 +59,6 @@ class MovieAdapter(
     }
 
     interface OnClickListener {
-        fun setonClick(data: MovieData.ResultsItem)
+        fun setonClick(data: ResultsItem)
     }
 }

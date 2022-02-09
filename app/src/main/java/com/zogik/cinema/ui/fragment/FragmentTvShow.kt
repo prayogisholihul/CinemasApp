@@ -12,7 +12,7 @@ import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailTv
 import com.zogik.cinema.ui.adapter.TvShowAdapter
 import com.zogik.cinema.ui.viewmodel.ViewModelTvShow
 import com.zogik.cinema.utils.IdlingResource
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import com.zogik.cinema.utils.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,16 +31,16 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
 
     private fun setupObserver() {
         viewModelTvShow.tvShowData.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
+            when (it.status) {
+                Result.Status.LOADING -> {
                     Utils.viewVisible(binding.loading)
                 }
-                is State.Success -> {
+                Result.Status.SUCCESS -> {
                     Utils.viewGone(binding.loading)
                     adapterTvShow.setData(it.data?.results)
                     IdlingResource.decrement()
                 }
-                is State.Error -> {
+                Result.Status.ERROR -> {
                     Utils.viewGone(binding.loading)
                     Utils.viewVisible(binding.tvNoDataFound)
                     Utils.showToast(requireContext(), "Data Can't be Loaded")

@@ -8,20 +8,20 @@ import com.bumptech.glide.Glide
 import com.skydoves.bundler.bundle
 import com.skydoves.bundler.intentOf
 import com.zogik.cinema.R
-import com.zogik.cinema.data.MovieData
 import com.zogik.cinema.data.ResultsItem
 import com.zogik.cinema.data.TvShowData
+import com.zogik.cinema.data.room.MovieEntity
 import com.zogik.cinema.databinding.ActivityDetailBinding
 import com.zogik.cinema.ui.viewmodel.DetailViewModel
 import com.zogik.cinema.utils.IdlingResource
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import com.zogik.cinema.utils.Utils
 import com.zogik.cinema.utils.Utils.viewGone
 import com.zogik.cinema.utils.Utils.viewVisible
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
-    private val dataMovie: ResultsItem? by bundle(PASS_DATA_MOVIE)
+    private val dataMovie: MovieEntity? by bundle(PASS_DATA_MOVIE)
     private val dataTv: TvShowData.ResultsItem? by bundle(PASS_DATA_TV)
     private val binding by viewBinding<ActivityDetailBinding>()
     private val viewModel: DetailViewModel by viewModel()
@@ -58,11 +58,11 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         viewModel.dataDetailMovie.observe(
             this
         ) {
-            when (it) {
-                is State.Loading -> {
+            when (it.status) {
+                Result.Status.LOADING -> {
                     viewVisible(binding.loading)
                 }
-                is State.Success -> {
+                Result.Status.SUCCESS -> {
                     viewGone(binding.loading)
                     binding.contentTitle.text = it.data?.title
                     binding.contentTitle.isSelected = true
@@ -77,7 +77,7 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                         .into(binding.ivPict)
                     IdlingResource.decrement()
                 }
-                is State.Error -> {
+                Result.Status.ERROR -> {
                     viewGone(binding.loading)
                     Utils.showToast(this, getString(R.string.toast_text))
                     IdlingResource.decrement()
@@ -86,11 +86,11 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         }
 
         viewModel.dataDetailTv.observe(this) {
-            when (it) {
-                is State.Loading -> {
+            when (it.status) {
+                Result.Status.LOADING -> {
                     viewVisible(binding.loading)
                 }
-                is State.Success -> {
+                Result.Status.SUCCESS -> {
                     viewGone(binding.loading)
                     binding.contentTitle.text = it.data?.name
                     binding.contentTitle.isSelected = true
@@ -105,7 +105,7 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
                         .into(binding.ivPict)
                     IdlingResource.decrement()
                 }
-                is State.Error -> {
+                Result.Status.ERROR -> {
                     viewGone(binding.loading)
                     Utils.showToast(this, getString(R.string.toast_text))
                     IdlingResource.decrement()
@@ -118,10 +118,10 @@ class ActivityDetail : AppCompatActivity(R.layout.activity_detail) {
         const val PASS_DATA_MOVIE = "MOVIE"
         const val PASS_DATA_TV = "TV"
 
-//        fun Context.passToDetailMovie(data: MovieData.ResultsItem) = intentOf<ActivityDetail> {
-//            +(PASS_DATA_MOVIE to data)
-//            startActivity(this@passToDetailMovie)
-//        }
+        fun Context.passToDetailMovie(data: MovieEntity) = intentOf<ActivityDetail> {
+            +(PASS_DATA_MOVIE to data)
+            startActivity(this@passToDetailMovie)
+        }
 
         fun Context.passToDetailTv(data: TvShowData.ResultsItem) = intentOf<ActivityDetail> {
             +(PASS_DATA_TV to data)

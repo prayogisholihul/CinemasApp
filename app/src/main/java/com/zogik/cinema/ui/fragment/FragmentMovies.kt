@@ -3,16 +3,17 @@ package com.zogik.cinema.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
-import com.zogik.cinema.data.MovieData
+import com.zogik.cinema.data.room.MovieEntity
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailMovie
 import com.zogik.cinema.ui.adapter.MovieAdapter
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
 import com.zogik.cinema.utils.IdlingResource
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import com.zogik.cinema.utils.Utils.showToast
 import com.zogik.cinema.utils.Utils.viewGone
 import com.zogik.cinema.utils.Utils.viewVisible
@@ -28,25 +29,26 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
 
         setupObserver()
         setupView()
-        IdlingResource.increment()
-        viewModelMovies.getMovies()
-        IdlingResource.decrement()
     }
 
     private fun setupObserver() {
-        viewModelMovies.moviesData.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
+        IdlingResource.increment()
+        viewModelMovies.moviesPagingData.observe(viewLifecycleOwner) {
+            when (it.status) {
+                Result.Status.LOADING -> {
                     viewVisible(binding.loading)
                 }
-                is State.Success -> {
+                Result.Status.SUCCESS -> {
                     viewGone(binding.loading)
-                    adapterMovies.setData(it.data?.results)
+                    viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                        it.data?.let { data ->
+                            adapterMovies.submitData(data)
+                        }
+                    }
                     IdlingResource.decrement()
                 }
-                is State.Error -> {
+                Result.Status.ERROR -> {
                     viewGone(binding.loading)
-                    viewVisible(binding.tvNoDataFound)
                     showToast(requireContext(), getString(R.string.toast_text))
                     IdlingResource.decrement()
                 }
@@ -56,9 +58,9 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
 
     private fun setupView() {
         adapterMovies = MovieAdapter(
-            arrayListOf(), requireContext(),
+            requireContext(),
             object : MovieAdapter.OnClickListener {
-                override fun setonClick(data: MovieData.ResultsItem) {
+                override fun setonClick(data: MovieEntity) {
                     requireContext().passToDetailMovie(data)
                 }
             }

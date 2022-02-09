@@ -7,33 +7,33 @@ import androidx.lifecycle.viewModelScope
 import com.zogik.cinema.data.DetailMovieData
 import com.zogik.cinema.data.DetailTvData
 import com.zogik.cinema.data.Repository
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import kotlinx.coroutines.launch
 
 class DetailViewModel(private val repository: Repository) : ViewModel() {
-    private val _dataDetailMovie: MutableLiveData<State<DetailMovieData?>> = MutableLiveData()
-    var dataDetailMovie: LiveData<State<DetailMovieData?>> = _dataDetailMovie
+    private val _dataDetailMovie: MutableLiveData<Result<DetailMovieData?>> = MutableLiveData()
+    var dataDetailMovie: LiveData<Result<DetailMovieData?>> = _dataDetailMovie
 
     fun getDetailMovie(movieId: Int) = viewModelScope.launch {
-        _dataDetailMovie.value = State.Loading()
+        _dataDetailMovie.value = Result.loading()
         try {
             val response = repository.getDetailsMovie(movieId)
-            _dataDetailMovie.value = State.Success(response.body())
+            _dataDetailMovie.value = response
         } catch (e: Exception) {
-            _dataDetailMovie.value = State.Error(e.message.toString())
+            _dataDetailMovie.value = Result.error(e.message.toString())
         }
     }
 
-    private val _dataDetailTv: MutableLiveData<State<DetailTvData?>> = MutableLiveData()
-    val dataDetailTv: LiveData<State<DetailTvData?>> = _dataDetailTv
+    private val _dataDetailTv: MutableLiveData<Result<DetailTvData?>> = MutableLiveData()
+    val dataDetailTv: LiveData<Result<DetailTvData?>> = _dataDetailTv
 
     fun getDetailTv(tvId: Int) = viewModelScope.launch {
-        _dataDetailTv.value = State.Loading()
+        _dataDetailTv.value = Result.loading()
         try {
             val response = repository.getDetailsTv(tvId)
-            _dataDetailTv.value = State.Success(response.body())
+            _dataDetailTv.value = response
         } catch (e: Exception) {
-            _dataDetailTv.value = State.Error(e.message.toString())
+            _dataDetailTv.value = Result.error(e.message.toString())
         }
     }
 }

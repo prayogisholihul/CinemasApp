@@ -1,6 +1,7 @@
 package com.zogik.cinema.data.room
 
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -10,8 +11,8 @@ import androidx.room.Query
 interface MovieDao {
 
     @Query("SELECT * FROM MovieEntity")
-    fun getMovie(): LiveData<List<MovieEntity>>
+    fun getMovie(): PagingSource<Int, MovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(movie: List<MovieEntity>)
+    fun insertAll(movie: List<MovieEntity>)
 }

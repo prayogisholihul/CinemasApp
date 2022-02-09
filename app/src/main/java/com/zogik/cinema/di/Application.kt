@@ -7,6 +7,7 @@ import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.ui.viewmodel.DetailViewModel
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
 import com.zogik.cinema.ui.viewmodel.ViewModelTvShow
+import com.zogik.cinema.utils.AppExecutors
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -28,7 +29,9 @@ class Application : Application() {
     private val single = module {
         single { ApiNetwork.getClient() }
 
-        single { Repository(get(), get()) }
+        single { Repository(get(), get(), get()) }
+
+        single { AppExecutors() }
 
         single { RoomDb(get()) }
     }

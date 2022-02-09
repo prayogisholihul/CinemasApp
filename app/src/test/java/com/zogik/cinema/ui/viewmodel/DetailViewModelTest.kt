@@ -1,13 +1,15 @@
 package com.zogik.cinema.ui.viewmodel
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.zogik.cinema.coroutines.CoroutinesTest
 import com.zogik.cinema.data.DetailMovieData
 import com.zogik.cinema.data.DetailTvData
 import com.zogik.cinema.data.Repository
+import com.zogik.cinema.data.room.RoomDb
 import com.zogik.cinema.network.ApiNetwork
-import com.zogik.cinema.utils.State
+import com.zogik.cinema.utils.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Before
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
@@ -37,19 +40,22 @@ class DetailViewModelTest {
     private lateinit var viewModel: DetailViewModel
 
     @Mock
-    private val repository = Repository(ApiNetwork.getClient())
+    private var context: Context = mock(Context::class.java)
 
     @Mock
-    private lateinit var observerMovie: Observer<State<DetailMovieData?>>
+    private val repository = Repository(ApiNetwork.getClient(), RoomDb.invoke(context))
 
     @Mock
-    private lateinit var observerTv: Observer<State<DetailTvData?>>
+    private lateinit var observerMovie: Observer<Result<DetailMovieData?>>
+
+    @Mock
+    private lateinit var observerTv: Observer<Result<DetailTvData?>>
 
     @Captor
-    private lateinit var argumentCaptorMovie: ArgumentCaptor<State<DetailMovieData?>>
+    private lateinit var argumentCaptorMovie: ArgumentCaptor<Result<DetailMovieData?>>
 
     @Captor
-    private lateinit var argumentCaptorTv: ArgumentCaptor<State<DetailTvData?>>
+    private lateinit var argumentCaptorTv: ArgumentCaptor<Result<DetailTvData?>>
 
     @Before
     fun setUp() {

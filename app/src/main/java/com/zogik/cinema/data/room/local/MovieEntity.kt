@@ -1,4 +1,4 @@
-package com.zogik.cinema.data.room
+package com.zogik.cinema.data.room.local
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

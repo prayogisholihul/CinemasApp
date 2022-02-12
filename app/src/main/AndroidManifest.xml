@@ -17,6 +17,9 @@
         android:theme="@style/Theme.CinemasApp"
         tools:ignore="DataExtractionRules">
         <activity
+            android:name=".ui.activity.FavoriteActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -25,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.ActivityDetail"/>
+        <activity android:name=".ui.activity.ActivityDetail" />
     </application>
 
 </manifest>

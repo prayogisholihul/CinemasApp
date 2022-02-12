@@ -1,13 +1,12 @@
 package com.zogik.cinema.ui.viewmodel
 
-import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.paging.PagingData
 import com.zogik.cinema.coroutines.CoroutinesTest
-import com.zogik.cinema.data.Repository
-import com.zogik.cinema.data.TvShowData
-import com.zogik.cinema.data.room.RoomDb
-import com.zogik.cinema.network.ApiNetwork
+import com.zogik.cinema.data.RepositoryTv
+import com.zogik.cinema.data.room.local.TvEntity
 import com.zogik.cinema.utils.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
@@ -20,11 +19,9 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
-import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -37,19 +34,16 @@ class ViewModelTvShowTest {
     val testCoroutineRule = CoroutinesTest()
 
     @Mock
-    private var context: Context = Mockito.mock(Context::class.java)
-
-    @Mock
-    private val repository = Repository(ApiNetwork.getClient(), RoomDb.invoke(context))
+    private val repository = Mockito.mock(RepositoryTv::class.java)
 
     @Mock
     private lateinit var viewModel: ViewModelTvShow
 
     @Mock
-    private lateinit var apiMoviesObserver: Observer<Result<TvShowData?>>
+    private lateinit var observerTv: Observer<Result<PagingData<TvEntity>>>
 
     @Captor
-    private lateinit var argumentCaptor: ArgumentCaptor<Result<TvShowData?>>
+    private lateinit var argumentCaptor: ArgumentCaptor<Result<PagingData<TvEntity>>>
 
     @Before
     fun setup() {
@@ -59,40 +53,24 @@ class ViewModelTvShowTest {
     @Test
     fun successTest() {
         testCoroutineRule.runBlockingTest {
-            `when`(repository.getTvShow())
-                .thenReturn(Response.success(TvShowData()))
-            viewModel.getTvShow()
-            verify(repository).getTvShow()
+            @Suppress("UNCHECKED_CAST")
+            val pagingData = Mockito.mock(PagingData::class.java) as PagingData<TvEntity>
+            val dummyTv = MutableLiveData<Result<PagingData<TvEntity>>>()
+            dummyTv.value = Result.success(pagingData)
+
+            `when`(repository.pagingTv())
+                .thenReturn(dummyTv)
+            viewModel.tvPagingData()
+            verify(repository).pagingTv()
 
             // Test ViewModel
-            viewModel.tvShowData.observeForever(apiMoviesObserver)
-            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
-            viewModel.tvShowData.removeObserver(apiMoviesObserver)
+            viewModel.tvPagingData().observeForever(observerTv)
+            verify(observerTv).onChanged(argumentCaptor.capture())
+            viewModel.tvPagingData().removeObserver(observerTv)
 
-            // test data yang direturn dari repo
-            val data: TvShowData? = argumentCaptor.value.data
+            // test data yang di-return
+            val data = argumentCaptor.value.data
             Assert.assertNotNull(data)
-        }
-    }
-
-    @Test
-    fun errorTest() {
-        testCoroutineRule.runBlockingTest {
-            val errorMessage = "Data Can't Be Loaded"
-            doThrow(RuntimeException(errorMessage))
-                .`when`(repository)
-                .getTvShow()
-            viewModel.getTvShow()
-            verify(repository).getTvShow()
-
-            // Test ViewModel
-            viewModel.tvShowData.observeForever(apiMoviesObserver)
-            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
-            viewModel.tvShowData.removeObserver(apiMoviesObserver)
-
-            // test data yang direturn
-            val data: TvShowData? = argumentCaptor.value.data
-            Assert.assertNull(data)
         }
     }
 }

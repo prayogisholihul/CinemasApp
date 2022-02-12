@@ -1,14 +1,12 @@
 package com.zogik.cinema.ui.viewmodel
 
-import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.paging.PagingData
 import com.zogik.cinema.coroutines.CoroutinesTest
-import com.zogik.cinema.data.DetailMovieData
-import com.zogik.cinema.data.MovieData
-import com.zogik.cinema.data.Repository
-import com.zogik.cinema.data.room.RoomDb
-import com.zogik.cinema.network.ApiNetwork
+import com.zogik.cinema.data.RepositoryMovie
+import com.zogik.cinema.data.room.local.MovieEntity
 import com.zogik.cinema.utils.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
@@ -24,7 +22,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
-import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -37,64 +34,43 @@ class ViewModelMoviesTest {
     val testCoroutineRule = CoroutinesTest()
 
     @Mock
-    private var context: Context = Mockito.mock(Context::class.java)
+    private val repository = Mockito.mock(RepositoryMovie::class.java)
 
     @Mock
-    private val repository = Repository(ApiNetwork.getClient(), RoomDb.invoke(context))
-
-    @Mock
-    private lateinit var observerMovie: Observer<Result<DetailMovieData?>>
+    private lateinit var observerMovie: Observer<Result<PagingData<MovieEntity>>>
 
     @Mock
     private lateinit var viewModel: ViewModelMovies
 
-    @Mock
-    private lateinit var apiMoviesObserver: Observer<Result<MovieData?>>
-
     @Captor
-    private lateinit var argumentCaptor: ArgumentCaptor<Result<MovieData?>>
+    private lateinit var argumentCaptor: ArgumentCaptor<Result<PagingData<MovieEntity>>>
 
     @Before
     fun setup() {
         viewModel = ViewModelMovies(repository)
     }
 
-//    @Test
-//    fun successTest() {
-//        testCoroutineRule.runBlockingTest {
-//            `when`(repository.getMovieList())
-//                .thenReturn(Result.success(MovieData()))
-//            viewModel.moviesPagingData
-//            verify(repository).getMovieList()
-//
-//            // Test ViewModel
-//            viewModel.moviesData.observeForever(apiMoviesObserver)
-//            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
-//            viewModel.moviesData.removeObserver(apiMoviesObserver)
-//
-//            // test data yang direturn dari repo
-//            val data: MovieData? = argumentCaptor.value.data
-//            Assert.assertNotNull(data)
-//        }
-//    }
-//
-//    @Test
-//    fun errorTest() {
-//        testCoroutineRule.runBlockingTest {
-//            val errorMessage = "Data Can't Be Loaded"
-//            `when`(repository.getMovieList())
-//                .thenThrow(RuntimeException(errorMessage))
-//            viewModel.getMovies()
-//            verify(repository).getMovieList()
-//
-//            // Test ViewModel
-//            viewModel.moviesData.observeForever(apiMoviesObserver)
-//            verify(apiMoviesObserver).onChanged(argumentCaptor.capture())
-//            viewModel.moviesData.removeObserver(apiMoviesObserver)
-//
-//            // test data yang direturn
-//            val data: MovieData? = argumentCaptor.value.data
-//            Assert.assertNull(data)
-//        }
-//    }
+    @Test
+    fun getMovie() {
+        testCoroutineRule.runBlockingTest {
+            @Suppress("UNCHECKED_CAST")
+            val pagingData = Mockito.mock(PagingData::class.java) as PagingData<MovieEntity>
+            val dummyMovies = MutableLiveData<Result<PagingData<MovieEntity>>>()
+            dummyMovies.value = Result.success(pagingData)
+
+            `when`(repository.pagingMovie())
+                .thenReturn(dummyMovies)
+            viewModel.moviesPagingData()
+            verify(repository).pagingMovie()
+
+            // Test ViewModel
+            viewModel.moviesPagingData().observeForever(observerMovie)
+            verify(observerMovie).onChanged(argumentCaptor.capture())
+            viewModel.moviesPagingData().removeObserver(observerMovie)
+
+            // test data yang di-return
+            val data = argumentCaptor.value.data
+            Assert.assertNotNull(data)
+        }
+    }
 }

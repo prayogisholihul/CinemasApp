@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.zogik.cinema.ui.fragment.FragmentMovies
 import com.zogik.cinema.ui.fragment.FragmentTvShow
 
-class TabAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+class MainTabAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     private val fragments: ArrayList<Fragment> = arrayListOf(

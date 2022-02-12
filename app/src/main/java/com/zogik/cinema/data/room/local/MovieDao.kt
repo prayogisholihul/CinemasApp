@@ -1,6 +1,5 @@
-package com.zogik.cinema.data.room
+package com.zogik.cinema.data.room.local
 
-import androidx.paging.DataSource
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -14,5 +13,8 @@ interface MovieDao {
     fun getMovie(): PagingSource<Int, MovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(movie: List<MovieEntity>)
+    fun insertAllMovies(movie: List<MovieEntity>)
+
+    @Query("SELECT COUNT(*) from MovieEntity")
+    fun counts(): Int
 }

@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
-import com.zogik.cinema.data.room.MovieEntity
+import com.zogik.cinema.data.room.local.MovieEntity
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailMovie
 import com.zogik.cinema.ui.adapter.MovieAdapter
@@ -26,21 +26,20 @@ class FragmentMovies : Fragment(R.layout.fragment_content) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupObserver()
         setupView()
     }
 
     private fun setupObserver() {
         IdlingResource.increment()
-        viewModelMovies.moviesPagingData.observe(viewLifecycleOwner) {
+        viewModelMovies.moviesPagingData().observe(viewLifecycleOwner) {
             when (it.status) {
                 Result.Status.LOADING -> {
                     viewVisible(binding.loading)
                 }
                 Result.Status.SUCCESS -> {
                     viewGone(binding.loading)
-                    viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                    viewLifecycleOwner.lifecycleScope.launchWhenResumed {
                         it.data?.let { data ->
                             adapterMovies.submitData(data)
                         }

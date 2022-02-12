@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class DetailTvData(
 
+    @field:SerializedName("id")
+    val id: Int? = null,
+
     @field:SerializedName("first_air_date")
     val firstAirDate: String? = null,
 

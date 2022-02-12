@@ -1,10 +1,13 @@
 package com.zogik.cinema.di
 
 import android.app.Application
-import com.zogik.cinema.data.Repository
+import com.zogik.cinema.data.RepositoryMovie
+import com.zogik.cinema.data.RepositoryTv
 import com.zogik.cinema.data.room.RoomDb
 import com.zogik.cinema.network.ApiNetwork
 import com.zogik.cinema.ui.viewmodel.DetailViewModel
+import com.zogik.cinema.ui.viewmodel.ViewModelFavoriteMovie
+import com.zogik.cinema.ui.viewmodel.ViewModelFavoriteTv
 import com.zogik.cinema.ui.viewmodel.ViewModelMovies
 import com.zogik.cinema.ui.viewmodel.ViewModelTvShow
 import com.zogik.cinema.utils.AppExecutors
@@ -22,14 +25,23 @@ class Application : Application() {
             ViewModelTvShow(get())
         }
         viewModel {
-            DetailViewModel(get())
+            DetailViewModel(get(), get())
+        }
+        viewModel {
+            ViewModelFavoriteMovie(get())
+        }
+
+        viewModel {
+            ViewModelFavoriteTv(get())
         }
     }
 
     private val single = module {
         single { ApiNetwork.getClient() }
 
-        single { Repository(get(), get(), get()) }
+        single { RepositoryMovie(get(), get(), get()) }
+
+        single { RepositoryTv(get(), get(), get()) }
 
         single { AppExecutors() }
 

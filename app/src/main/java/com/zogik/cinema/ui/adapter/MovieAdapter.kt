@@ -4,12 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zogik.cinema.R
-import com.zogik.cinema.data.room.MovieEntity
+import com.zogik.cinema.data.room.local.MovieEntity
 import com.zogik.cinema.databinding.ListItemAdapterBinding
 
 class MovieAdapter(

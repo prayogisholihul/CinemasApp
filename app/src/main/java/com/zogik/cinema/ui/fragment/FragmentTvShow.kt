@@ -3,10 +3,11 @@ package com.zogik.cinema.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.zogik.cinema.R
-import com.zogik.cinema.data.TvShowData
+import com.zogik.cinema.data.room.local.TvEntity
 import com.zogik.cinema.databinding.FragmentContentBinding
 import com.zogik.cinema.ui.activity.ActivityDetail.Companion.passToDetailTv
 import com.zogik.cinema.ui.adapter.TvShowAdapter
@@ -25,19 +26,20 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
 
         setupObserver()
         setupView()
-        IdlingResource.increment()
-        viewModelTvShow.getTvShow()
     }
 
     private fun setupObserver() {
-        viewModelTvShow.tvShowData.observe(viewLifecycleOwner) {
+        IdlingResource.increment()
+        viewModelTvShow.tvPagingData().observe(viewLifecycleOwner) {
             when (it.status) {
                 Result.Status.LOADING -> {
                     Utils.viewVisible(binding.loading)
                 }
                 Result.Status.SUCCESS -> {
                     Utils.viewGone(binding.loading)
-                    adapterTvShow.setData(it.data?.results)
+                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                        it.data?.let { it1 -> adapterTvShow.submitData(it1) }
+                    }
                     IdlingResource.decrement()
                 }
                 Result.Status.ERROR -> {
@@ -53,9 +55,9 @@ class FragmentTvShow : Fragment(R.layout.fragment_content) {
 
     private fun setupView() {
         adapterTvShow = TvShowAdapter(
-            arrayListOf(), requireContext(),
+            requireContext(),
             object : TvShowAdapter.OnClickListener {
-                override fun onClick(data: TvShowData.ResultsItem) {
+                override fun setonClick(data: TvEntity) {
                     requireContext().passToDetailTv(data)
                 }
             }

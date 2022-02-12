@@ -8,22 +8,28 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zogik.cinema.R
-import com.zogik.cinema.data.room.local.TvEntity
+import com.zogik.cinema.data.room.favorite.MovieFavoriteEntity
 import com.zogik.cinema.databinding.ListItemAdapterBinding
 
-class TvShowAdapter(
+class MovieFavoriteAdapter(
     private val context: Context,
     private val listener: OnClickListener
 ) :
-    PagingDataAdapter<TvEntity, TvShowAdapter.ViewHolder>(DIFF_CALLBACK) {
+    PagingDataAdapter<MovieFavoriteEntity, MovieFavoriteAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<TvEntity>() {
-            override fun areItemsTheSame(oldItem: TvEntity, newItem: TvEntity): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MovieFavoriteEntity>() {
+            override fun areItemsTheSame(
+                oldItem: MovieFavoriteEntity,
+                newItem: MovieFavoriteEntity
+            ): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: TvEntity, newItem: TvEntity): Boolean {
+            override fun areContentsTheSame(
+                oldItem: MovieFavoriteEntity,
+                newItem: MovieFavoriteEntity
+            ): Boolean {
                 return oldItem == newItem
             }
         }
@@ -40,21 +46,21 @@ class TvShowAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val tvShow = getItem(position)
+        val movie = getItem(position)
         val imageLink = "https://image.tmdb.org/t/p/w500"
 
-        holder.binding.name.text = tvShow?.name
+        holder.binding.name.text = movie?.title
         holder.binding.name.isSelected = true
-        holder.binding.date.text = tvShow?.firstAirDate
+        holder.binding.date.text = movie?.releaseDate
         Glide.with(context)
-            .load(imageLink + tvShow?.posterPath)
+            .load(imageLink + movie?.posterPath)
             .circleCrop()
             .placeholder(R.drawable.ic_launcher_foreground)
             .into(holder.binding.imageView)
 
         holder.binding.containerRoot.setOnClickListener {
-            if (tvShow != null) {
-                listener.setonClick(tvShow)
+            if (movie != null) {
+                listener.setonClick(movie)
             }
         }
     }
@@ -63,6 +69,6 @@ class TvShowAdapter(
         RecyclerView.ViewHolder(binding.root)
 
     interface OnClickListener {
-        fun setonClick(data: TvEntity)
+        fun setonClick(data: MovieFavoriteEntity)
     }
 }
